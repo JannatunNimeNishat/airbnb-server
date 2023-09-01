@@ -33,16 +33,33 @@ async function run() {
             res.send(destinations);
         });
 
-        
+
 
         // get destinations by category
-        app.get('/destinations_by_category/:destination_value', async(req,res)=>{
+        app.get('/destinations_by_category/:destination_value', async (req, res) => {
             const destination_value = req.params.destination_value;
-            const query = {category: destination_value}
+            const query = { category: destination_value }
             const destinationByCategory = await destinationCollection.find(query).toArray();
-          
+
             res.send(destinationByCategory);
         });
+
+        // get destinations by search values
+        app.post('/destinations_by_search_value', async (req, res) => {
+            const searchValues = req.body;
+            // console.log(searchValues);
+            const { location='', startDate, endDate, totalGust } = searchValues || {};
+            console.log(location, startDate, endDate, totalGust, typeof totalGust);
+            const destinations = await destinationCollection.find().toArray();
+            const destinationBySearchValue = destinations.filter(destination => destination.
+                location_name.includes(location) && (destination.available_date.includes(startDate) && destination.available_date.includes(endDate)) && destination.guests >= totalGust
+            );
+
+            // console.log(destinationBySearchValue);
+            res.send(destinationBySearchValue);
+        });
+
+
 
 
 
